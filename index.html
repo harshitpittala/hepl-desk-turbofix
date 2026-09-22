@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Desk / Turbofix — Repair Price Lookup</title>
+<meta name="description" content="Internal price lookup tool for Turbofix telecallers — find repair prices by brand and model in seconds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-decor" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2 3 14h7l-1 8 11-13h-8l1-7Z" fill="currentColor"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <span class="brand-name">Turbofix<span class="brand-dot">.</span></span>
+        <span class="brand-sub">help-desk</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="live-clock" id="liveClock" aria-hidden="true"></div>
+      <span class="pill pill-live"><span class="dot"></span>Price lookup</span>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="hero">
+    <h1>Find a repair price in two clicks</h1>
+    <p>Pick a brand and model — every fault Buzzmeeh has priced for that device shows up instantly, ready to read out to the customer.</p>
+  </section>
+
+  <section class="picker card" aria-label="Model selector">
+    <div class="picker-grid">
+
+      <div class="field">
+        <label for="brandSelect">1. Brand</label>
+        <div class="select-wrap">
+          <select id="brandSelect">
+            <option value="">Select brand…</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="modelSelect">2. Model</label>
+        <div class="select-wrap">
+          <select id="modelSelect" disabled>
+            <option value="">Select brand first…</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field field-search">
+        <label for="quickSearch">Or search any model</label>
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none"><path d="m21 21-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="quickSearch" type="text" placeholder="e.g. iPhone 14, Galaxy S23, Nord CE…" autocomplete="off">
+          <button id="clearSearch" class="clear-btn" type="button" aria-label="Clear search" hidden>&times;</button>
+        </div>
+        <div id="searchResults" class="search-results" hidden></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="resultSection" class="result-section" hidden>
+    <div class="result-header">
+      <div class="result-title">
+        <span class="result-brand-badge" id="resultBrandBadge"></span>
+        <h2 id="resultModelName">Model</h2>
+      </div>
+      <div class="result-actions">
+        <span class="fault-count" id="faultCount"></span>
+        <button id="copyAllBtn" class="btn btn-ghost" type="button">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M8 8V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-3M8 8H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3M8 8h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Copy full list
+        </button>
+      </div>
+    </div>
+
+    <div class="fault-grid" id="faultGrid"></div>
+
+    <p class="disclaimer">Prices are pulled from Buzzmeeh's published doorstep-repair rates and are not city-tiered — the same figure applies for every Hyderabad booking. If a fault isn't listed here, Buzzmeeh hasn't published a price for it yet; tell the customer it needs to be confirmed rather than guessing.</p>
+  </section>
+
+  <section id="emptyState" class="empty-state">
+    <div class="empty-illustration">
+      <svg viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="58" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 8"/>
+        <path d="M45 75V50a8 8 0 0 1 8-8h14a8 8 0 0 1 8 8v25" stroke="var(--brand-blue)" stroke-width="3" stroke-linecap="round"/>
+        <rect x="38" y="75" width="44" height="10" rx="4" fill="var(--brand-blue)"/>
+        <circle cx="60" cy="42" r="6" stroke="var(--brand-blue)" stroke-width="3"/>
+      </svg>
+    </div>
+    <h3>No model selected yet</h3>
+    <p>Choose a brand and model above, or search for one directly, to see every priced fault and rate.</p>
+  </section>
+
+  <footer class="page-footer">
+    <span id="metaSource"></span>
+  </footer>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
