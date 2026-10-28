@@ -489,6 +489,49 @@ select:disabled { cursor: not-allowed; opacity: 0.55; }
 }
 .flag-banner svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
 
+.quality-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--brand-blue-deep);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  vertical-align: 1px;
+}
+
+.fault-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 10px;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  position: relative;
+  z-index: 1;
+}
+.fault-details b { font-weight: 600; color: var(--text-faint); }
+
+.fault-note {
+  margin: 8px 0 0;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  font-style: italic;
+  line-height: 1.4;
+  position: relative;
+  z-index: 1;
+}
+
+.fault-source {
+  margin: 8px 0 0;
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  position: relative;
+  z-index: 1;
+}
+
 .fault-card.copied { border-color: var(--trust-green); }
 .fault-card.copied .fault-price { color: var(--trust-green); }
 

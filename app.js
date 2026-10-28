@@ -28,8 +28,23 @@
     }, 1800);
   }
 
+  function fmtNum(n) {
+    return typeof n === "number" ? n.toLocaleString("en-IN") : String(n);
+  }
+
   function fmtPrice(n) {
-    return "₹" + n.toLocaleString("en-IN");
+    return "₹" + fmtNum(n);
+  }
+
+  // e.g. "Display Replacement (Original)"
+  function faultLabel(f) {
+    return f.quality ? f.fault + " (" + f.quality + ")" : f.fault;
+  }
+
+  function fmtDate(iso) {
+    var p = iso.split("-");
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return parseInt(p[2], 10) + " " + months[parseInt(p[1], 10) - 1];
   }
 
   function copyText(text) {
@@ -245,16 +260,24 @@
     faultGrid.innerHTML = "";
     faults.forEach(function (f, idx) {
       var flag = getFlag(brand, model, f.fault);
+      // notes like "... - CHECK" mark a price that still needs confirming
+      if (!flag && f.note && /\bCHECK\b/.test(f.note)) flag = { note: f.note };
       var card = document.createElement("div");
       card.className = "fault-card" + (flag ? " flagged" : "");
       card.style.animationDelay = Math.min(idx * 25, 400) + "ms";
       card.tabIndex = 0;
       card.setAttribute("role", "button");
-      card.setAttribute("aria-label", "Copy " + f.fault + " price for " + model);
+      card.setAttribute("aria-label", "Copy " + faultLabel(f) + " price for " + model);
 
       var name = document.createElement("p");
       name.className = "fault-name";
       name.textContent = f.fault;
+      if (f.quality) {
+        var q = document.createElement("span");
+        q.className = "quality-tag";
+        q.textContent = f.quality;
+        name.appendChild(q);
+      }
       card.appendChild(name);
 
       var row = document.createElement("div");
@@ -262,7 +285,7 @@
 
       var price = document.createElement("span");
       price.className = "fault-price";
-      price.innerHTML = '<span class="rupee">₹</span>' + f.price.toLocaleString("en-IN");
+      price.innerHTML = '<span class="rupee">₹</span>' + fmtNum(f.price);
       row.appendChild(price);
 
       var chip = document.createElement("span");
@@ -272,14 +295,46 @@
 
       card.appendChild(row);
 
+      var details = [];
+      if (f.final != null) details.push(["Final", fmtPrice(f.final)]);
+      if (f.notebook != null) details.push(["Notebook", fmtPrice(f.notebook)]);
+      if (f.range) details.push(["Quoted", "₹" + f.range]);
+      if (f.warranty) details.push(["Warranty", f.warranty]);
+      if (details.length) {
+        var dl = document.createElement("div");
+        dl.className = "fault-details";
+        details.forEach(function (d) {
+          var item = document.createElement("span");
+          var k = document.createElement("b");
+          k.textContent = d[0] + " ";
+          item.appendChild(k);
+          item.appendChild(document.createTextNode(d[1]));
+          dl.appendChild(item);
+        });
+        card.appendChild(dl);
+      }
+
+      if (f.note && !flag) {
+        var note = document.createElement("p");
+        note.className = "fault-note";
+        note.textContent = f.note;
+        card.appendChild(note);
+      }
+
+      var src = document.createElement("p");
+      src.className = "fault-source";
+      src.textContent = (f.source || "") + (f.date ? " · " + fmtDate(f.date) : "");
+      if (src.textContent) card.appendChild(src);
+
       if (flag) {
         var banner = document.createElement("div");
         banner.className = "flag-banner";
-        banner.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>' + flag.note + '</span>';
+        banner.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span></span>';
+        banner.querySelector("span").textContent = flag.note;
         card.appendChild(banner);
       }
 
-      var copyLine = model + " — " + f.fault + ": " + fmtPrice(f.price);
+      var copyLine = model + " — " + faultLabel(f) + ": " + fmtPrice(f.price);
       card.addEventListener("click", function () {
         copyText(copyLine).then(function () {
           card.classList.add("copied");
@@ -304,7 +359,7 @@
     var faults = PRICE_DATA[brand][model];
     var lines = [brand + " " + model + " — Repair Prices"];
     faults.forEach(function (f) {
-      lines.push("  " + f.fault + ": " + fmtPrice(f.price));
+      lines.push("  " + faultLabel(f) + ": " + fmtPrice(f.price));
     });
     copyText(lines.join("\n")).then(function () {
       showToast("Full price list copied to clipboard");
