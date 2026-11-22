@@ -3,9 +3,6 @@
 
   var brandSelect = document.getElementById("brandSelect");
   var modelSelect = document.getElementById("modelSelect");
-  var quickSearch = document.getElementById("quickSearch");
-  var clearSearch = document.getElementById("clearSearch");
-  var searchResults = document.getElementById("searchResults");
   var resultSection = document.getElementById("resultSection");
   var emptyState = document.getElementById("emptyState");
   var resultBrandBadge = document.getElementById("resultBrandBadge");
@@ -130,119 +127,6 @@
     var model = modelSelect.value;
     if (!brand || !model) { hideResults(); return; }
     renderResult(brand, model);
-  });
-
-  // ---------- quick search ----------
-  var allEntries = [];
-  brands.forEach(function (b) {
-    Object.keys(PRICE_DATA[b]).forEach(function (m) {
-      allEntries.push({ brand: b, model: m, search: (b + " " + m).toLowerCase() });
-    });
-  });
-
-  var activeIndex = -1;
-  var currentMatches = [];
-
-  quickSearch.addEventListener("input", function () {
-    var q = quickSearch.value.trim().toLowerCase();
-    clearSearch.hidden = q.length === 0;
-    activeIndex = -1;
-    if (!q) {
-      searchResults.hidden = true;
-      searchResults.innerHTML = "";
-      return;
-    }
-    var terms = q.split(/\s+/);
-    currentMatches = allEntries.filter(function (e) {
-      return terms.every(function (t) { return e.search.indexOf(t) !== -1; });
-    }).slice(0, 30);
-
-    renderSearchResults();
-  });
-
-  function renderSearchResults() {
-    searchResults.innerHTML = "";
-    if (currentMatches.length === 0) {
-      var none = document.createElement("div");
-      none.className = "search-no-results";
-      none.textContent = "No model matches that search.";
-      searchResults.appendChild(none);
-      searchResults.hidden = false;
-      return;
-    }
-    currentMatches.forEach(function (m, i) {
-      var item = document.createElement("div");
-      item.className = "search-result-item" + (i === activeIndex ? " active" : "");
-      item.setAttribute("role", "button");
-      item.tabIndex = 0;
-
-      var name = document.createElement("span");
-      name.className = "srm-name";
-      name.textContent = m.model;
-
-      var badge = document.createElement("span");
-      badge.className = "srm-brand";
-      badge.textContent = m.brand;
-
-      item.appendChild(name);
-      item.appendChild(badge);
-      item.addEventListener("click", function () { selectFromSearch(m); });
-      searchResults.appendChild(item);
-    });
-    searchResults.hidden = false;
-  }
-
-  function selectFromSearch(entry) {
-    brandSelect.value = entry.brand;
-    brandSelect.dispatchEvent(new Event("change"));
-    modelSelect.value = entry.model;
-    modelSelect.dispatchEvent(new Event("change"));
-    quickSearch.value = entry.brand + " — " + entry.model;
-    searchResults.hidden = true;
-    clearSearch.hidden = false;
-    resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  quickSearch.addEventListener("keydown", function (e) {
-    if (searchResults.hidden || currentMatches.length === 0) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      activeIndex = Math.min(activeIndex + 1, currentMatches.length - 1);
-      renderSearchResults();
-      scrollActiveIntoView();
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      activeIndex = Math.max(activeIndex - 1, 0);
-      renderSearchResults();
-      scrollActiveIntoView();
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (activeIndex >= 0 && currentMatches[activeIndex]) {
-        selectFromSearch(currentMatches[activeIndex]);
-      } else if (currentMatches.length > 0) {
-        selectFromSearch(currentMatches[0]);
-      }
-    } else if (e.key === "Escape") {
-      searchResults.hidden = true;
-    }
-  });
-
-  function scrollActiveIntoView() {
-    var el = searchResults.querySelector(".search-result-item.active");
-    if (el) el.scrollIntoView({ block: "nearest" });
-  }
-
-  clearSearch.addEventListener("click", function () {
-    quickSearch.value = "";
-    clearSearch.hidden = true;
-    searchResults.hidden = true;
-    quickSearch.focus();
-  });
-
-  document.addEventListener("click", function (e) {
-    if (!e.target.closest(".field-search")) {
-      searchResults.hidden = true;
-    }
   });
 
   // ---------- render result ----------

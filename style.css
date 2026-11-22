@@ -247,9 +247,9 @@ select:disabled { cursor: not-allowed; opacity: 0.55; }
   color: var(--text-faint);
   pointer-events: none;
 }
-#quickSearch {
+#askInput {
   width: 100%;
-  padding: 13px 40px 13px 42px;
+  padding: 13px 54px 13px 42px;
   font-size: 0.96rem;
   font-family: inherit;
   font-weight: 500;
@@ -259,8 +259,8 @@ select:disabled { cursor: not-allowed; opacity: 0.55; }
   border-radius: var(--radius-md);
   transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
-#quickSearch:hover { border-color: var(--brand-blue-light); }
-#quickSearch:focus { outline: none; border-color: var(--brand-blue); box-shadow: var(--shadow-focus); }
+#askInput:hover { border-color: var(--brand-blue-light); }
+#askInput:focus { outline: none; border-color: var(--brand-blue); box-shadow: var(--shadow-focus); }
 
 .clear-btn {
   position: absolute;
@@ -608,3 +608,74 @@ select:disabled { cursor: not-allowed; opacity: 0.55; }
   .picker { padding: 18px; }
   .result-header { align-items: flex-start; }
 }
+
+/* ===== Price chat bot ===== */
+
+.chat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chat-chip {
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--brand-blue-deep);
+  font: 600 0.78rem/1.3 inherit; font-family: inherit; padding: 6px 10px; border-radius: 999px; cursor: pointer; text-align: left;
+}
+.chat-chip:hover { border-color: var(--brand-blue-light); background: #eef4ff; }
+
+.chat-card + .chat-card { margin-top: 4px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.chat-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.chat-card-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.chat-card-title strong { font-size: 1rem; color: var(--brand-navy); }
+.chat-brand { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brand-blue); }
+.chat-card-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.chat-mini {
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-dim);
+  font: 600 0.74rem/1 inherit; font-family: inherit; padding: 6px 9px; border-radius: 8px; cursor: pointer;
+}
+.chat-mini:hover { color: var(--brand-blue-deep); border-color: var(--brand-blue-light); }
+
+.chat-group { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin: 8px 0 2px; }
+.chat-prices { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.chat-price { padding: 8px 0; border-bottom: 1px solid var(--line-soft); }
+.chat-price:last-child { border-bottom: 0; }
+.chat-price-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.chat-fault { font-weight: 600; font-size: 0.88rem; }
+.chat-q {
+  display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 999px;
+  background: #eef4ff; color: var(--brand-blue-deep); font-size: 0.7rem; font-weight: 700; vertical-align: 1px;
+}
+.chat-amt { font-family: "JetBrains Mono", ui-monospace, monospace; font-weight: 600; font-size: 1rem; color: var(--trust-green); white-space: nowrap; }
+.chat-extra { font-size: 0.78rem; color: var(--text-dim); margin-top: 3px; }
+.chat-extra.strong { color: var(--brand-navy); font-weight: 600; }
+.chat-extra.warn { color: var(--trust-gold); font-weight: 600; }
+.chat-src { font-size: 0.7rem; color: var(--text-faint); margin-top: 3px; }
+.chat-missing {
+  font-size: 0.8rem; color: #92400e; background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: 8px; padding: 7px 10px; margin-top: 6px;
+}
+
+
+.ask-send {
+  position: absolute; right: 6px;
+  width: 38px; height: 38px; display: grid; place-items: center;
+  border: 0; border-radius: 11px; background: var(--brand-blue); color: #fff; cursor: pointer;
+  transition: background 0.2s var(--ease), transform 0.15s;
+}
+.ask-send svg { width: 18px; height: 18px; }
+.ask-send:hover { background: var(--brand-blue-deep); transform: translateX(1px); }
+.ask-send:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+.ask-section { margin-bottom: 34px; animation: rise 0.35s var(--ease) both; }
+.ask-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.ask-section-head h2 { margin: 0; font-size: 1.15rem; color: var(--brand-navy); letter-spacing: -0.01em; }
+.ask-log { display: flex; flex-direction: column; gap: 14px; }
+
+.ask-item {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md); padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;
+  animation: rise 0.35s var(--ease) both;
+}
+.ask-item.old { box-shadow: var(--shadow-sm); opacity: 0.85; }
+.ask-q { display: flex; align-items: baseline; gap: 8px; font-size: 0.86rem; color: var(--text-dim); overflow-wrap: anywhere; }
+.ask-q b { flex-shrink: 0; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); }
+.ask-item p { margin: 0; font-size: 0.92rem; line-height: 1.45; }
+.ask-item .chat-card + .chat-card { margin-top: 4px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.ask-item .chat-prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); column-gap: 24px; }
+.ask-item .chat-price:last-child { border-bottom: 1px solid var(--line-soft); }
+@media (max-width: 480px) { .ask-item { padding: 14px 16px; } }
