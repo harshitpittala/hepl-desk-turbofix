@@ -51,7 +51,6 @@
     s = s.replace(/(\d+) ?mm\b/g, "$1mm");                      // "42 mm" -> 42mm
     s = s.replace(/(\d+) ?(st|nd|rd|th)\b/g, "$1");                 // 9th -> 9
     s = s.replace(/(\d+) ?gb\b|\b\d+ ?tb\b/g, " ");                 // storage sizes
-    s = s.replace(/\b(19|20)\d\d\b/g, " ");                         // years
     s = s.replace(/(\d)(pro|max|plus|mini|ultra|lite|fe)\b/g, "$1 $2"); // 15pro -> 15 pro
     s = s.replace(/\bse ?(\d)\b/g, "se $1");
     s = s.replace(/\b([avymsftgxck]) (\d{1,3})\b/g, "$1$2");        // "y 28" -> y28, "s 22" -> s22
@@ -166,6 +165,9 @@
     });
   }
 
+  function isYear(t) { return /^20[12]\d$/.test(t); }      // launch years help, but never rule a model out
+  var DEVICES = ["iphone", "ipad", "macbook", "imac", "watch", "airpods"];
+
   function isCode(t) { return /^a\d{4}$/.test(t); }        // Apple model numbers like A2377
   function hasDigit(t) { return /\d/.test(t); }
 
@@ -180,12 +182,13 @@
       }
       if (qSet[t]) {
         if (isCode(t)) { s += 8; codeHit = true; }
+        else if (isYear(t)) s += 2;
         else if (hasDigit(t)) { s += 3; matchedId = true; }
         else if (VARIANT[t]) s += 2;
         else if (GENERIC[t]) s += 1;
         else { s += 2; matchedId = true; }
       } else {
-        if (isCode(t)) { /* model lists several codes; missing one is fine */ }
+        if (isCode(t) || isYear(t)) { /* model lists several codes / a year; missing one is fine */ }
         else if (GENERIC[t]) s -= 0.2;
         else if (/mm$/.test(t)) s -= 0.8;
         else if (hasDigit(t)) s -= 2.5;
@@ -197,11 +200,12 @@
     var set = {};
     entry.toks.forEach(function (t) { set[t] = 1; });
     qToks.forEach(function (t) {
-      if (set[t] || used[t]) return;
+      if (set[t] || used[t] || isYear(t)) return;
       if (isCode(t)) s -= 1;                       // a different model number was asked
       else if (hasDigit(t) && !/^\d+g$/.test(t)) s -= 1.5;
       else if (VARIANT[t]) s -= 2;
     });
+    DEVICES.forEach(function (d) { if (qSet[d] && !set[d]) s -= 6; });  // asked for an iPad, this is an iPhone
     if (OTHER_BRANDS.test(qText)) s -= 8;          // a brand we have no prices for
     var hint = BRAND_HINTS[entry.brand];
     if (hint && hint.test(qText)) s += 1;
